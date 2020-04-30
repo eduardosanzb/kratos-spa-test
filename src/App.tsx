@@ -3,18 +3,9 @@ import './App.css'
 import { BrowserRouter, Route, Switch, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
-export interface TypedResponse<T = any> extends Response {
-    /**
-     * this will override `json` method from `Body` that is extended by `Response`
-     * interface Body {
-     *     json(): Promise<any>;
-     * }
-     */
-    json<P = T>(): Promise<P>
-}
-
 const api = (url: string, args?: RequestInit) =>
     fetch(url, { credentials: 'include', ...args }).then(res => res.json())
+
 const Login = () => {
     const query = new URLSearchParams(useLocation().search)
     const [data, setData] = useState<any>()
