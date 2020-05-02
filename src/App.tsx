@@ -3,32 +3,37 @@ import './App.css'
 import { BrowserRouter, Route, Switch, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
-const api = (url: string, args?: RequestInit) =>
-    fetch(url, { credentials: 'include', ...args }).then(res => res.json())
-
 const Login = () => {
     const query = new URLSearchParams(useLocation().search)
     const [data, setData] = useState<any>()
 
     useEffect(() => {
         async function helper() {
-            const r = await api(
+            const r = await fetch(
                 `http://127.0.0.1:4455/.ory/kratos/public/self-service/browser/flows/requests/login?request=${query.get(
                     'request'
-                )}`
-            )
+                )}`,
+                {
+                    credentials: 'include',
+                }
+            ).then(res => res.json())
             setData(r)
         }
 
         helper()
     }, [query.get('request')])
-    const { register, handleSubmit, watch, errors } = useForm()
+
+    const { register, handleSubmit } = useForm()
 
     const onSubmit = (form: any) => {
-        api(data.methods.password.config.action, {
+        /**
+         * THIS WILL FAIL, WITH A 400. BECAUSE THE CSFR TOKEN ARE NOT THE SAME
+         */
+        fetch(data.methods.password.config.action, {
             method: 'post',
             body: JSON.stringify(form),
-        })
+            credentials: 'include',
+        }).then(res => res.json())
     }
 
     return (
@@ -56,7 +61,21 @@ const Login = () => {
     )
 }
 const Home = () => {
-    return <div>Home</div>
+    return (
+        <>
+            <button
+                onClick={() => {
+                    window.location.href =
+                        'http://127.0.0.1:4455/.ory/kratos/public/self-service/browser/flows/login'
+                }}
+            >
+                Start login
+            </button>
+        </>
+    )
+}
+const Dashboard = () => {
+    return <div>Dashboard</div>
 }
 
 function App() {
@@ -67,10 +86,12 @@ function App() {
                     <Login />
                 </Route>
                 <Route path="/dashboard">
-                    <Home />
+                    <Dashboard />
                 </Route>
                 <Route path="/">
-                    <Home />
+                    <>
+                        <Home />
+                    </>
                 </Route>
             </Switch>
         </BrowserRouter>
