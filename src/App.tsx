@@ -3,10 +3,53 @@ import './App.css'
 import { BrowserRouter, Route, Switch, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
+const Home = () => {
+    return (
+        <>
+            <button
+                onClick={() => {
+                    window.location.href =
+                        'http://127.0.0.1:4455/.ory/kratos/public/self-service/browser/flows/login'
+                }}
+            >
+                Start login
+            </button>
+        </>
+    )
+}
+
+const Dashboard = () => {
+    return <div>Dashboard</div>
+}
+
+function App() {
+    return (
+        <BrowserRouter>
+            <Switch>
+                <Route path="/auth/login">
+                    <Login />
+                </Route>
+                <Route path="/dashboard">
+                    <Dashboard />
+                </Route>
+                <Route path="/">
+                    <>
+                        <Home />
+                    </>
+                </Route>
+            </Switch>
+        </BrowserRouter>
+    )
+}
 const Login = () => {
     const query = new URLSearchParams(useLocation().search)
     const [data, setData] = useState<any>()
 
+    /**
+     * 1. Get the requestId from the url
+     * 2. GET the login request params config object from kratos public api
+     * 3. Render the form and submit the form
+     */
     useEffect(() => {
         async function helper() {
             const r = await fetch(
@@ -58,43 +101,6 @@ const Login = () => {
                 <input type="submit" value="Submit" />
             </form>
         </div>
-    )
-}
-const Home = () => {
-    return (
-        <>
-            <button
-                onClick={() => {
-                    window.location.href =
-                        'http://127.0.0.1:4455/.ory/kratos/public/self-service/browser/flows/login'
-                }}
-            >
-                Start login
-            </button>
-        </>
-    )
-}
-const Dashboard = () => {
-    return <div>Dashboard</div>
-}
-
-function App() {
-    return (
-        <BrowserRouter>
-            <Switch>
-                <Route path="/auth/login">
-                    <Login />
-                </Route>
-                <Route path="/dashboard">
-                    <Dashboard />
-                </Route>
-                <Route path="/">
-                    <>
-                        <Home />
-                    </>
-                </Route>
-            </Switch>
-        </BrowserRouter>
     )
 }
 
