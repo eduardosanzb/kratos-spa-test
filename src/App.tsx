@@ -48,7 +48,7 @@ const Login = () => {
     /**
      * 1. Get the requestId from the url
      * 2. GET the login request params config object from kratos public api
-     * 3. Render the form and submit the form
+     * 3. Render the form and submit the
      */
     useEffect(() => {
         async function helper() {
@@ -69,12 +69,18 @@ const Login = () => {
     const { register, handleSubmit } = useForm()
 
     const onSubmit = (form: any) => {
-        /**
-         * THIS WILL FAIL, WITH A 400. BECAUSE THE CSFR TOKEN ARE NOT THE SAME
-         */
+        const searchParams = Object.keys(form)
+            .map(key => {
+                return encodeURIComponent(key) + '=' + encodeURIComponent(form[key])
+            })
+            .join('&')
+
         fetch(data.methods.password.config.action, {
             method: 'post',
-            body: JSON.stringify(form),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: searchParams,
             credentials: 'include',
         }).then(res => res.json())
     }
